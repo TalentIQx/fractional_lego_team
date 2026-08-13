@@ -1,23 +1,15 @@
 # 🧱 Lego Manufacturing Command Center
 
-A visual, Lego-inspired financial decision tool for dental manufacturing labs.
+# Lego Manufacturing Command Center
 
-## Features
-- 🏭 **Lab Health Dashboard** – See your revenue, margin, and runway at a glance
-- 🧠 **AI Fractional Team** – CFO, Business Coach, Social Media Manager, BD Director
-- 📦 **New Product Development** – Test new products before investing
-- 📢 **B2B Growth** – Prospecting, upsell, and referral strategies
-- 🛒 **B2C (Amazon)** – Consumer channel profitability calculator
-- 🏆 **Competitor Intel** – Perplexity API integration for competitive research
+## Files
+- `app.py` — Streamlit UI (black Lego theme, onboarding, AI Coach tab)
+- `ai_coach_server.py` — FastAPI backend (secure AI provider proxy)
+- `requirements.txt` — dependencies
 
-## Deployment
-1. Clone this repository
-2. Install requirements: `pip install -r requirements.txt`
-3. Run: `streamlit run app.py`
-4. Deploy to Streamlit Cloud
-
-## Tech Stack
-- Streamlit
-- Pandas, NumPy
-- Plotly
-- Requests (Perplexity API)
+## Quick start (local)
+1. Create a virtualenv and install deps:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
