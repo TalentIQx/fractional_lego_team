@@ -29,8 +29,28 @@ def show_onboarding():
     st.session_state["seen_onboarding"] = True
     st.experimental_rerun()
 
+# Use modal when available; fall back to inline UI so older Streamlit versions don't raise AttributeError.
 if not st.session_state["seen_onboarding"]:
-    with st.modal("Welcome to Lego Manufacturing Command Center", True):
+    if hasattr(st, "modal"):
+        with st.modal("Welcome to Lego Manufacturing Command Center", True):
+            st.markdown("""
+            ### 👋 Welcome, Founder
+            This short onboarding will help you get comfortable with the app.
+            - **Quick Summary** shows revenue, runway, and margin.
+            - **Lab Health** tab visualizes product mix and runway under shocks.
+            - **AI Coach** tab simulates advice and can call your secure backend.
+            - **Beginner mode** explains terms in plain English.
+            """)
+            st.write("Choose your preferred vibe:")
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Playful Lego (default)"):
+                    show_onboarding()
+            with col2:
+                if st.button("Minimal Lego"):
+                    show_onboarding()
+    else:
+        # Inline fallback: same content and buttons, just not in a modal
         st.markdown("""
         ### 👋 Welcome, Founder
         This short onboarding will help you get comfortable with the app.
@@ -59,13 +79,13 @@ st.markdown("""
     .badge { font-weight:700; border-radius:12px; padding:4px 12px; font-size:12px; }
     .badge.green { background:#003300; color:#00ff55; } .badge.yellow { background:#332b00; color:#ffcc00; } .badge.red { background:#330000; color:#ff4444; }
     .stTabs [data-baseweb="tab-list"] { background:#0b0b0b; padding:12px; border-radius:14px; box-shadow:0 0 18px rgba(255,255,255,0.15); gap:12px; }
-    .stTabs [data-baseweb="tab"] { font-weight:900 !important; color:#fff !important; border-radius:10px; padding:12px 24px; background:#222; border:2px solid #333; transition:0.2s; font-size:16px; }
+    .stTabs [data-baseweb="tab"] { font-weight:900 !important; color:#fff !important; border-radius:10px; padding:12px 24px; background:#222; border:2px solid #333; transition:0.2s; font-size:16px[...]
     .stTabs [data-baseweb="tab"]:hover { background:#333; border-color:#ffcc00; transform:translateY(-2px); }
     .stTabs [aria-selected="true"] { background: linear-gradient(90deg,#ff0000,#ffcc00,#00aaff,#00cc44); color:#000 !important; border:2px solid #fff; box-shadow:0 0 14px rgba(255,255,255,0.4); }
-    .stButton>button { background: linear-gradient(90deg,#ff0000,#ffcc00); color:#000; border-radius:10px; padding:8px 18px; font-weight:800; border:none; box-shadow:0 6px 18px rgba(255,255,255,0.06); }
+    .stButton>button { background: linear-gradient(90deg,#ff0000,#ffcc00); color:#000; border-radius:10px; padding:8px 18px; font-weight:800; border:none; box-shadow:0 6px 18px rgba(255,255,255,0.[...]
     .stButton>button:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(255,255,255,0.12); }
     .rec-card { background:#0f0f10; border-radius:10px; padding:14px; margin-bottom:12px; border-left:6px solid:#00aaff; color:#f5f5f5; }
-    .rec-card.urgent { border-left-color:#ff0000; background:#120808; } .rec-card.high { border-left-color:#ffcc00; background:#14120a; } .rec-card.medium { border-left-color:#00aaff; background:#071022; }
+    .rec-card.urgent { border-left-color:#ff0000; background:#120808; } .rec-card.high { border-left-color:#ffcc00; background:#14120a; } .rec-card.medium { border-left-color:#00aaff; background:#[...]
     .lego-divider { height:6px; background: linear-gradient(90deg,#ff0000,#ffcc00,#00aaff,#00cc44); border-radius:4px; margin:24px 0; }
     .small-muted { color:#bdbdbd; font-size:13px; }
     .metric-value { font-size:28px; font-weight:800; color:#f5f5f5; }
@@ -218,10 +238,10 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 
 # ---------------- TAB 1: LAB HEALTH ----------------
 with tab1:
-    st.markdown("""<div style="background:#07070a; padding:12px 16px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">🧱 Lab Health Blocks</strong><span style="color:#bdbdbd; margin-left:10px;">Your financial snapshot – block by block</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#07070a; padding:12px 16px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">🧱 Lab Health Blocks</strong><span style="color:#bd[...]
     st.subheader("🧱 Product Mix")
     prod_df = pd.DataFrame({"Product": list(product_units.keys()), "Units": list(product_units.values()), "Revenue": [product_revenue[p] for p in product_units]})
-    fig = px.bar(prod_df, x="Revenue", y="Product", text=prod_df["Units"].apply(lambda x: f"{x} units"), orientation="h", height=320, color="Revenue", color_continuous_scale=px.colors.sequential.Blues)
+    fig = px.bar(prod_df, x="Revenue", y="Product", text=prod_df["Units"].apply(lambda x: f"{x} units"), orientation="h", height=320, color="Revenue", color_continuous_scale=px.colors.sequential.[...]
     fig.update_layout(plot_bgcolor=DARK_COLORS["bg"], paper_bgcolor=DARK_COLORS["paper"], font_color=DARK_COLORS["text"], xaxis_title="Monthly Revenue ($)", yaxis_title="")
     st.plotly_chart(fig, use_container_width=True)
 
@@ -230,11 +250,11 @@ with tab1:
     with colA:
         pct_display = min(b2b_percent * 100, 100)
         color = "#43a047" if b2b_percent > 0.7 else "#f9a825" if b2b_percent > 0.5 else "#e53935"
-        st.markdown(f"""<div style="background:#0f0f10; border-radius:12px; padding:14px;"><div style="font-weight:700; margin-bottom:8px;">🟢 Revenue Coverage</div><div style="display:flex; gap:8px; align-items:center;"><div style="flex:1; background:#111; height:22px; border-radius:12px; overflow:hidden;"><div style="width:{pct_display}%; height:100%; background:{color}; border-radius:12px;"></div></div><span style="font-weight:700; min-width:60px;">{b2b_percent:.0%}</span></div><div style="font-size:12px; color:#bdbdbd; margin-top:6px;">B2B revenue vs. B2C</div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div style="background:#0f0f10; border-radius:12px; padding:14px;"><div style="font-weight:700; margin-bottom:8px;">🟢 Revenue Coverage</div><div style="display:flex; ga[...]
     with colB:
         burn_display = min(abs(net_burn) / 20000 * 100, 100)
         burn_color = "#43a047" if net_burn <= 0 else "#f9a825" if net_burn < 10000 else "#e53935"
-        st.markdown(f"""<div style="background:#0f0f10; border-radius:12px; padding:14px;"><div style="font-weight:700; margin-bottom:8px;">🔴 Burn Rate</div><div style="display:flex; gap:8px; align-items:center;"><div style="flex:1; background:#111; height:22px; border-radius:12px; overflow:hidden;"><div style="width:{burn_display}%; height:100%; background:{burn_color}; border-radius:12px;"></div></div><span style="font-weight:700; min-width:60px;">${abs(net_burn):,.0f}</span></div><div style="font-size:12px; color:#bdbdbd; margin-top:6px;">{'Profitable' if net_burn <= 0 else 'Burning cash'}</div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div style="background:#0f0f10; border-radius:12px; padding:14px;"><div style="font-weight:700; margin-bottom:8px;">🔴 Burn Rate</div><div style="display:flex; gap:8px; [...]
 
     st.subheader("🗺️ Runway Heatmap")
     st.caption("Projected runway at different shock levels – how much can your lab absorb?")
@@ -246,31 +266,31 @@ with tab1:
         shocked_costs = total_costs - owner_draw - marketing_budget
         shocked_net = shocked_costs + owner_draw - shocked_revenue
         runway_at_shock.append(cash_reserve / max(shocked_net, 1000) if shocked_net > 0 else 999)
-    heatmap_data = pd.DataFrame({"Scenario": shock_labels, "Runway (months)": [min(r, 60) for r in runway_at_shock], "Color": ["#43a047" if r > 12 else "#f9a825" if r > 6 else "#e53935" for r in runway_at_shock]})
-    fig2 = go.Figure(data=[go.Bar(x=heatmap_data["Scenario"], y=heatmap_data["Runway (months)"], marker_color=heatmap_data["Color"], text=heatmap_data["Runway (months)"].apply(lambda x: f"{x:.1f}mo"), textposition="auto")])
-    fig2.update_layout(title="Runway Under Different Revenue Shocks", yaxis_title="Runway (months)", height=320, plot_bgcolor=DARK_COLORS["bg"], paper_bgcolor=DARK_COLORS["paper"], font_color=DARK_COLORS["text"], showlegend=False)
+    heatmap_data = pd.DataFrame({"Scenario": shock_labels, "Runway (months)": [min(r, 60) for r in runway_at_shock], "Color": ["#43a047" if r > 12 else "#f9a825" if r > 6 else "#e53935" for r in [...]
+    fig2 = go.Figure(data=[go.Bar(x=heatmap_data["Scenario"], y=heatmap_data["Runway (months)"], marker_color=heatmap_data["Color"], text=heatmap_data["Runway (months)"].apply(lambda x: f"{x:.1f}[...]
+    fig2.update_layout(title="Runway Under Different Revenue Shocks", yaxis_title="Runway (months)", height=320, plot_bgcolor=DARK_COLORS["bg"], paper_bgcolor=DARK_COLORS["paper"], font_color=DAR[...]
     fig2.add_hline(y=6, line_dash="dash", line_color="red", annotation_text="Critical (<6mo)")
     fig2.add_hline(y=12, line_dash="dash", line_color="orange", annotation_text="Caution (<12mo)")
     st.plotly_chart(fig2, use_container_width=True)
 
-    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-top:18px;"><strong style="color:#f5f5f5;">🧠 AI Lab Health Recommendations</strong><span style="color:#bdbdbd; margin-left:10px;">Simple, prioritized actions</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-top:18px;"><strong style="color:#f5f5f5;">🧠 AI Lab Health Recommendations</strong><span style="color[...]
     recommendations = []
     if monthly_revenue < 50000:
-        recommendations.append({"priority":"🔴 URGENT","area":"Revenue","action":f"Revenue (${monthly_revenue:,.0f}/mo) below $50K. Add 10 crowns/day (+300/mo) → +${300*350:,.0f}/mo.","effort":"Medium","impact":"High"})
+        recommendations.append({"priority":"🔴 URGENT","area":"Revenue","action":f"Revenue (${monthly_revenue:,.0f}/mo) below $50K. Add 10 crowns/day (+300/mo) → +${300*350:,.0f}/mo.","effort[...]
     if gross_margin < 0.35:
-        recommendations.append({"priority":"🔴 URGENT","area":"Margin","action":f"Gross margin ({gross_margin:.1%}) below 35%. Negotiate supplier discounts 5-10% → +${monthly_revenue*0.05:,.0f}/mo.","effort":"Low","impact":"High"})
+        recommendations.append({"priority":"🔴 URGENT","area":"Margin","action":f"Gross margin ({gross_margin:.1%}) below 35%. Negotiate supplier discounts 5-10% → +${monthly_revenue*0.05:,.0[...]
     if b2b_percent > 0.90 and monthly_revenue > 30000:
-        recommendations.append({"priority":"🟡 MEDIUM","area":"Channel Mix","action":f"You're {b2b_percent:.0%} B2B. Launch mouth guards on Amazon to add ~${monthly_revenue*0.15:,.0f}/mo.","effort":"Medium","impact":"Medium"})
+        recommendations.append({"priority":"🟡 MEDIUM","area":"Channel Mix","action":f"You're {b2b_percent:.0%} B2B. Launch mouth guards on Amazon to add ~${monthly_revenue*0.15:,.0f}/mo.","eff[...]
     if labor_cost / max(monthly_revenue, 1) > 0.35:
-        recommendations.append({"priority":"🟡 MEDIUM","area":"Labor","action":f"Labor is {labor_cost/max(monthly_revenue,1):.1%} of revenue. Automate 1-2 steps to save ~${labor_cost*0.15:,.0f}/mo.","effort":"Medium","impact":"High"})
+        recommendations.append({"priority":"🟡 MEDIUM","area":"Labor","action":f"Labor is {labor_cost/max(monthly_revenue,1):.1%} of revenue. Automate 1-2 steps to save ~${labor_cost*0.15:,.0f}[...]
     if runway < 6:
-        recommendations.append({"priority":"🚨 CRITICAL","area":"Cash","action":f"Runway {runway:.1f} months. Immediate: (1) Offer upfront payment discounts, (2) Reduce owner draw, (3) Prioritize fastest revenue channels.","effort":"Low","impact":"Critical"})
+        recommendations.append({"priority":"🚨 CRITICAL","area":"Cash","action":f"Runway {runway:.1f} months. Immediate: (1) Offer upfront payment discounts, (2) Reduce owner draw, (3) Prioriti[...]
     if not recommendations:
         st.success("✅ Your lab is in great shape! Focus on execution and growth.")
     else:
         for rec in recommendations:
             rec_class = "urgent" if "CRITICAL" in rec["priority"] or "URGENT" in rec["priority"] else "high" if "MEDIUM" in rec["priority"] else "medium"
-            st.markdown(f"""<div class="rec-card {rec_class}"><div style="display:flex; justify-content:space-between; align-items:flex-start;"><div><div style="font-weight:800;">{rec['priority']} · {rec['area']}</div><div style="margin-top:6px; color:#f5f5f5;">{rec['action']}</div></div><div style="text-align:right; font-size:12px; color:#bdbdbd;">⚡ {rec['effort']} effort<br>📈 {rec['impact']} impact</div></div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="rec-card {rec_class}"><div style="display:flex; justify-content:space-between; align-items:flex-start;"><div><div style="font-weight:800;">{rec['priority'][...]
 
     st.markdown("**Next Best Actions**")
     a1, a2, a3 = st.columns(3)
@@ -283,7 +303,7 @@ with tab1:
 
 # ---------------- TAB 2: AI FRACTIONAL TEAM (COACH) ----------------
 with tab2:
-    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">🧠 AI Fractional Team</strong><span style="color:#bdbdbd; margin-left:10px;">A friendly coach that explains actions and suggests next steps</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">🧠 AI Fractional Team</strong><span style="color:#bdbdbd[...]
     st.markdown("### 🔎 Coach Snapshot")
     st.info("This tab is ready for a live AI integration. Use the backend endpoint to keep API keys secure.")
 
@@ -291,9 +311,9 @@ with tab2:
     ai_endpoint = st.text_input("AI endpoint URL (your server)", placeholder="https://your-server.example/api/coach")
     persona = st.selectbox("Persona", ["💰 CFO – Financial Strategist", "🎯 Growth Coach – Sales & Ops", "📈 Marketing Coach – B2C Growth", "🤝 BD Coach – Partnerships"])
     user_goal = st.text_input("What do you want help with?", "Increase monthly revenue by $10k")
-    tone = st.selectbox("Tone", ["Practical", "Encouraging", "Direct"])
+    tone = st.selectbox("Tone", ["Practical", "Encouraging", "Direct"]) 
 
-    prompt_preview = f"Persona: {persona}\\nGoal: {user_goal}\\nContext: Revenue ${monthly_revenue:,.0f}, Runway {runway:.1f} months, Gross margin {gross_margin:.1%}\\nTone: {tone}"
+    prompt_preview = f"Persona: {persona}\nGoal: {user_goal}\nContext: Revenue ${monthly_revenue:,.0f}, Runway {runway:.1f} months, Gross margin {gross_margin:.1%}\nTone: {tone}"
     st.code(prompt_preview)
 
     if st.button("🧠 Simulate Coach Response (local)"):
@@ -329,7 +349,7 @@ with tab2:
 
 # ---------------- TAB 3: NEW PRODUCTS ----------------
 with tab3:
-    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">📦 Product Development</strong><span style="color:#bdbdbd; margin-left:10px;">Quickly evaluate new product ideas</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">📦 Product Development</strong><span style="color:#bdbdb[...]
     col1, col2 = st.columns(2)
     with col1:
         dev_cost = st.number_input("Development cost ($)", value=5000, step=1000, key="dev_cost")
@@ -365,7 +385,7 @@ with tab3:
 
 # ---------------- TAB 4: B2B GROWTH ----------------
 with tab4:
-    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">📢 B2B Growth</strong><span style="color:#bdbdbd; margin-left:10px;">Build dentist relationships</span></div>""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">📢 B2B Growth</strong><span style="color:#bdbdbd; margin[...]
     strategy = st.selectbox("Choose strategy:", ["New Dentist Prospecting", "Existing Dentist Upsell", "Referral Program", "Conference ROI"])
     if strategy == "New Dentist Prospecting":
         target = st.number_input("Dentists to contact", value=50, step=10)
@@ -376,18 +396,19 @@ with tab4:
         revenue = customers * 12000
         st.metric("Expected New Customers", f"{customers:.0f}")
         st.metric("Annual Revenue", f"${revenue:,.0f}")
-        st.markdown(f"""**📋 Prospecting Plan:**\n1. Identify {target} dentists using directories\n2. Send personalized email (use template)\n3. Follow up with sample kit\n4. Offer free consultation\n\n**Cost per acquisition:** ~$500-1,000\n**Timeline:** 1-3 months""", unsafe_allow_html=True)
+        st.markdown(f"""**📋 Prospecting Plan:**\n1. Identify {target} dentists using directories\n2. Send personalized email (use template)\n3. Follow up with sample kit\n4. Offer free consult[...]")
 
 # ---------------- TAB 5: B2C (AMAZON) ----------------
 with tab5:
-    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">🛒 B2C (Amazon)</strong><span style="color:#bdbdbd; margin-left:10px;">Simple launch checklist</span></div>""", unsafe_allow_html=True)
-    st.markdown("""**Amazon Quick Launch Checklist**\n1. Create a single product listing for mouth guards.\n2. Start with 50 units and a promotional price.\n3. Use 5 high-quality photos and 3 short bullets.\n4. Run a 14-day ad test with $200 budget.\n5. Measure conversion and adjust price.""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">🛒 B2C (Amazon)</strong><span style="color:#bdbdbd; marg[...]
+    st.markdown("""**Amazon Quick Launch Checklist**\n1. Create a single product listing for mouth guards.\n2. Start with 50 units and a promotional price.\n3. Use 5 high-quality photos and 3 sho[...]")
 
 # ---------------- TAB 6: COMPETITOR INTEL ----------------
 with tab6:
-    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">🏆 Competitor Intel</strong><span style="color:#bdbdbd; margin-left:10px;">High-level signals and quick checks</span></div>""", unsafe_allow_html=True)
-    st.markdown("""**Quick competitor checks**\n- Check top 3 local labs for pricing and turnaround time.\n- Review 5 customer testimonials for quality signals.\n- Compare product mix and identify gaps you can exploit.""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#071022; padding:12px; border-radius:10px; margin-bottom:12px;"><strong style="color:#f5f5f5;">🏆 Competitor Intel</strong><span style="color:#bdbdbd; [...]
+    st.markdown("""**Quick competitor checks**\n- Check top 3 local labs for pricing and turnaround time.\n- Review 5 customer testimonials for quality signals.\n- Compare product mix and identif[...]")
 
 # ---------------- FOOTER ----------------
 st.markdown("---")
-st.markdown("""<div style="color:#bdbdbd; font-size:13px;"><strong>Deployment notes:</strong> This app is UI‑tested for Streamlit. To enable the live AI coach: host your AI model or proxy on a secure server and call it from the server endpoint (do not embed API keys in the client). Use HTTPS in production.</div>""", unsafe_allow_html=True)
+st.markdown("""<div style="color:#bdbdbd; font-size:13px;"><strong>Deployment notes:</strong> This app is UI‑tested for Streamlit. To enable the live AI coach: host your AI model or proxy on a [...]
+""", unsafe_allow_html=True)
