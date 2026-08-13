@@ -1,13 +1,14 @@
 # Streamlit app
 streamlit==1.30.0
-pandas
-numpy
-plotly
-requests
-reportlab
+pandas==2.2.2
+numpy==1.26.5
+plotly==5.18.0
+requests==2.31.0
+reportlab==4.0
+Pillow>=9.5.0
 
 # FastAPI backend
-fastapi
-uvicorn
-httpx
-pydantic
+fastapi==0.95.2
+uvicorn==0.22.0
+httpx==0.24.1
+pydantic==1.10.12
