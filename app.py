@@ -53,30 +53,32 @@ def apply_dark_layout(fig):
     )
     return fig
 
-# ---------------- ONBOARDING (backwards-compatible) ----------------
-if "seen_onboarding" not in st.session_state:
-    st.session_state["seen_onboarding"] = False
-
+# Safe onboarding finish (backwards-compatible)
 def finish_onboarding():
     st.session_state["seen_onboarding"] = True
     log_event("onboarding_completed", {"user_action":"finished"})
-    st.experimental_rerun()
+    # Call experimental_rerun only if available and safe
+    try:
+        if hasattr(st, "experimental_rerun"):
+            st.experimental_rerun()
+    except Exception:
+        # fallback: do nothing; session_state flag will persist
+        pass
 
-if not st.session_state["seen_onboarding"]:
+# Onboarding UI (unchanged logic, uses finish_onboarding above)
+if not st.session_state.get("seen_onboarding", False):
     onboarding_title = "Welcome to Lego Manufacturing Command Center"
-    onboarding_text = """
-### 👋 Welcome, Founder
+    onboarding_text = """### 👋 Welcome, Founder
 This short onboarding will help you get comfortable with the app.
-- **Quick Summary** shows revenue, runway, and margin.
-- **Lab Health** tab visualizes product mix and runway under shocks.
-- **AI Coach** tab simulates advice and can call your secure backend.
-- **Beginner mode** explains terms in plain English.
+- Quick Summary shows revenue, runway, and margin.
+- Lab Health tab visualizes product mix and runway under shocks.
+- AI Coach tab simulates advice and can call your secure backend.
+- Beginner mode explains terms in plain English.
 """
     if hasattr(st, "modal"):
         try:
             with st.modal(onboarding_title, True):
                 st.markdown(onboarding_text)
-                st.write("Choose your preferred vibe:")
                 col1, col2 = st.columns(2)
                 if col1.button("Playful Lego (default)"):
                     finish_onboarding()
