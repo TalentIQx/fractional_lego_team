@@ -1,7 +1,12 @@
-streamlit>=1.24
+# Streamlit app
+streamlit==1.30.0
 pandas
+numpy
 plotly
 requests
+reportlab
+
+# FastAPI backend
 fastapi
 uvicorn
 httpx
